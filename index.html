@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BitForge | Booth Algorithm Lab</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+font-family:'Courier New',monospace;
+background:#101416;
+color:#d8e5df;
+}
+header{
+background:#171f20;
+border-bottom:1px solid #344b42;
+padding:18px 6%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:15px;
+}
+.logo{font-size:24px;font-weight:bold;color:#b6ff62}
+.logo span{color:#54e5d0}
+nav a{
+text-decoration:none;
+color:#b8c9c2;
+margin-left:20px;
+font-size:13px;
+}
+nav a:hover{color:#b6ff62}
+.hero{
+padding:75px 7%;
+background:linear-gradient(120deg,#17231e,#172e2c,#19211d);
+border-bottom:1px solid #304a3e;
+}
+.hero small{color:#b6ff62;letter-spacing:3px}
+.hero h1{font-size:clamp(34px,6vw,58px);margin:20px 0;color:#fff}
+.hero h1 span{color:#b6ff62}
+.hero p{max-width:680px;color:#a7bab0;line-height:1.8;font-family:Arial}
+button{cursor:pointer}
+.btn{
+border:1px solid #b6ff62;
+padding:12px 20px;
+margin:5px;
+background:#b6ff62;
+color:#101416;
+font-weight:bold;
+border-radius:4px;
+font-family:inherit;
+}
+.btn:hover{background:#d0ff9d}
+.btn-alt{background:transparent;color:#b6ff62}
+.btn-alt:hover{background:#24342b}
+.container{width:90%;max-width:1150px;margin:50px auto}
+.section-title{
+font-size:25px;
+color:#b6ff62;
+margin-bottom:22px;
+}
+.section-title span{color:#54e5d0}
+.panel{
+background:#192221;
+border:1px solid #344b42;
+padding:25px;
+margin-bottom:25px;
+border-radius:7px;
+}
+.panel h3{color:#54e5d0;margin-bottom:17px}
+.panel p{font-family:Arial;color:#a9bbb2;line-height:1.8}
+.input-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+label{display:block;color:#b6ff62;font-size:13px;margin-bottom:8px}
+input,select{
+width:100%;
+padding:13px;
+background:#101918;
+border:1px solid #456153;
+color:#fff;
+font-family:inherit;
+border-radius:4px;
+margin-bottom:18px;
+}
+input:focus,select:focus{outline:1px solid #b6ff62}
+.rules{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+}
+.rule{
+background:#101918;
+border:1px solid #345345;
+padding:18px;
+text-align:center;
+}
+.rule strong{font-size:24px;color:#b6ff62}
+.rule p{font-size:12px;margin-top:8px}
+.sim-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+}
+.reg-panel{
+background:#101918;
+border:1px solid #3e6452;
+padding:20px;
+text-align:center;
+border-radius:5px;
+}
+.reg-panel h4{color:#54e5d0;font-size:13px;margin-bottom:12px}
+.reg-panel p{
+font-size:24px;
+font-weight:bold;
+color:#b6ff62;
+letter-spacing:2px;
+overflow-wrap:anywhere;
+}
+.status{
+background:#202d27;
+border-left:4px solid #b6ff62;
+padding:18px;
+margin-top:20px;
+}
+.status h3{color:#b6ff62}
+.status p{margin-top:8px;font-size:14px}
+.controls{text-align:center;margin-top:20px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{padding:13px;text-align:center;border:1px solid #344b42;font-size:12px}
+th{background:#27372e;color:#b6ff62}
+td{background:#131c19;color:#c9d9d0}
+.result{
+padding:25px;
+text-align:center;
+background:#173b2c;
+border:1px solid #b6ff62;
+margin-top:20px;
+border-radius:5px;
+}
+.result h2{font-size:30px;color:#b6ff62;margin:12px}
+.flowchart{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+padding:15px;
+}
+.node{
+width:min(90%,360px);
+padding:14px;
+text-align:center;
+border:1px solid #54e5d0;
+background:#172c29;
+color:#d8e5df;
+border-radius:4px;
+font-size:13px;
+}
+.node.terminal{
+width:170px;
+border-radius:30px;
+border-color:#b6ff62;
+color:#b6ff62;
+}
+.node.decision{
+border:1px dashed #b6ff62;
+background:#2c3322;
+}
+.arrow{color:#b6ff62;font-size:22px}
+.branch{font-size:12px;color:#54e5d0}
+footer{
+padding:30px;
+text-align:center;
+background:#171f20;
+border-top:1px solid #344b42;
+color:#879b90;
+font-size:12px;
+}
+.hidden{display:none}
+@media(max-width:700px){
+header{justify-content:center}
+nav{text-align:center}
+nav a{margin:8px}
+.input-grid{grid-template-columns:1fr}
+.rules{grid-template-columns:1fr 1fr}
+.container{width:94%}
+.panel{padding:17px}
+}
+@media(max-width:420px){
+.sim-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">BIT<span>FORGE</span>_</div>
+<nav>
+<a href="#home">HOME</a>
+<a href="#theory">THEORY</a>
+<a href="#lab">SIMULATION</a>
+<a href="#flow">FLOWCHART</a>
+</nav>
+</header>
+
+<section class="hero" id="home">
+<small>/// DIGITAL ENGINEERING LABORATORY</small>
+<h1>BOOTH'S<br><span>MULTIPLICATION</span></h1>
+<p>A visual exploration of signed binary arithmetic. Configure operands, execute individual calculation cycles and observe how computer hardware performs multiplication.</p>
+<button class="btn" onclick="document.getElementById('lab').scrollIntoView()">INITIALIZE LAB →</button>
+</section>
+
+<div class="container" id="theory">
+<h2 class="section-title">01. <span>THEORY</span> / OVERVIEW</h2>
+
+<div class="panel">
+<h3>Algorithm Description</h3>
+<p>Booth's algorithm is an efficient method for multiplying signed binary numbers in 2's complement representation. It examines the least significant multiplier bit and an additional previous bit to determine the required arithmetic operation.</p>
+<br>
+<h3>Decision Logic</h3>
+
+<div class="rules">
+<div class="rule"><strong>00</strong><p>HOLD / NO OPERATION</p></div>
+<div class="rule"><strong>01</strong><p>ADD M TO A</p></div>
+<div class="rule"><strong>10</strong><p>SUBTRACT M FROM A</p></div>
+<div class="rule"><strong>11</strong><p>HOLD / NO OPERATION</p></div>
+</div>
+<br>
+<p>After the selected operation, an arithmetic right shift is performed on the combined A, Q and Q-1 registers. The process continues until the iteration counter reaches zero.</p>
+</div>
+</div>
+
+<div class="container" id="lab">
+<h2 class="section-title">02. <span>SIMULATION</span> / INPUT CONSOLE</h2>
+
+<div class="panel">
+<h3>OPERAND CONFIGURATION</h3>
+
+<div class="input-grid">
+<div>
+<label>M // MULTIPLICAND</label>
+<input id="mInput" placeholder="Enter binary M">
+</div>
+<div>
+<label>Q // MULTIPLIER</label>
+<input id="qInput" placeholder="Enter binary Q">
+</div>
+</div>
+
+<label>REGISTER WIDTH</label>
+<select id="bitSize">
+<option value="4">4-BIT PROCESSOR</option>
+<option value="5">5-BIT PROCESSOR</option>
+<option value="8">8-BIT PROCESSOR</option>
+</select>
+
+<button class="btn" onclick="startSimulation()">EXECUTE ALGORITHM</button>
+<button class="btn btn-alt" onclick="resetSimulation()">CLEAR CONSOLE</button>
+
+<p id="error" style="color:#ff8585;margin-top:10px"></p>
+</div>
+
+<div id="simulationArea" class="hidden">
+
+<div class="panel">
+<h3>REGISTER MONITOR // LIVE VALUES</h3>
+
+<div class="sim-grid">
+<div class="reg-panel"><h4>ACCUMULATOR [A]</h4><p id="regA">0000</p></div>
+<div class="reg-panel"><h4>MULTIPLIER [Q]</h4><p id="regQ">0000</p></div>
+<div class="reg-panel"><h4>PREVIOUS BIT [Q-1]</h4><p id="regQ1">0</p></div>
+<div class="reg-panel"><h4>MULTIPLICAND [M]</h4><p id="regM">0000</p></div>
+</div>
+
+<div class="status">
+<h3 id="currentOperation">SYSTEM INITIALIZED</h3>
+<p id="iteration">Cycle: 0</p>
+<p id="bitPair">BIT PAIR: -</p>
+<p id="operationDetail"></p>
+</div>
+
+<div class="controls">
+<button class="btn" id="nextBtn" onclick="nextStep()">NEXT CYCLE →</button>
+<button class="btn btn-alt" onclick="resetSimulation()">RESTART</button>
+</div>
+</div>
+
+<div class="panel">
+<h3>EXECUTION LOG // HISTORY</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>CYCLE</th>
+<th>Q₀ Q-1</th>
+<th>OPERATION</th>
+<th>A</th>
+<th>Q</th>
+<th>Q-1</th>
+</tr>
+</thead>
+<tbody id="history"></tbody>
+</table>
+</div>
+</div>
+
+<div class="result hidden" id="finalResult">
+<p>/// PROCESS FINISHED</p>
+<h2 id="binaryResult"></h2>
+<p id="decimalResult"></p>
+</div>
+
+</div>
+</div>
+
+<div class="container" id="flow">
+<h2 class="section-title">03. <span>FLOWCHART</span> / LOGIC SEQUENCE</h2>
+
+<div class="panel">
+<div class="flowchart">
+<div class="node terminal">START</div>
+<div class="arrow">↓</div>
+<div class="node">INPUT MULTIPLICAND M AND MULTIPLIER Q</div>
+<div class="arrow">↓</div>
+<div class="node">INITIALIZE A = 0, Q-1 = 0, COUNT = n</div>
+<div class="arrow">↓</div>
+<div class="node">CHECK Q₀ AND Q-1</div>
+<div class="arrow">↓</div>
+<div class="node decision">IDENTIFY BIT PAIR</div>
+<div class="node">01 : A = A + M<br>10 : A = A - M<br>00 / 11 : NO OPERATION</div>
+<div class="arrow">↓</div>
+<div class="node">ARITHMETIC RIGHT SHIFT</div>
+<div class="arrow">↓</div>
+<div class="node">COUNT = COUNT - 1</div>
+<div class="arrow">↓</div>
+<div class="node decision">IS COUNT = 0 ?</div>
+<div class="branch">NO → RETURN TO BIT CHECK</div>
+<div class="arrow">↓ YES</div>
+<div class="node">PRODUCT = A CONCATENATED WITH Q</div>
+<div class="arrow">↓</div>
+<div class="node terminal">END</div>
+</div>
+</div>
+</div>
+
+<div class="container">
+<div class="panel">
+<h3>PROJECT DETAILS</h3>
+<p>SUBJECT: Computer Organization and Architecture</p>
+<p>MODULE: Arithmetic Operations</p>
+<p>TOPIC: Booth's Multiplication Algorithm</p>
+<p>IMPLEMENTATION: HTML, CSS and JavaScript</p>
+<br>
+<h3>APPLICATIONS</h3>
+<p>• Signed binary multiplication</p>
+<p>• Arithmetic Logic Unit operations</p>
+<p>• Processor arithmetic circuits</p>
+<p>• Digital hardware design</p>
+</div>
+</div>
+
+<footer>
+<p>BITFORGE_ // BOOTH MULTIPLICATION LAB</p>
+<p>COMPUTER ORGANIZATION AND ARCHITECTURE</p>
+</footer>
+
+<script>
+let state=null;
+let steps=[];
+let currentStep=0;
+
+function toBits(v,n){
+return (v&((1n<<BigInt(n))-1n)).toString(2).padStart(n,"0");
+}
+
+function signedValue(v,n){
+let sign=1n<<BigInt(n-1);
+return v>=sign?v-(1n<<BigInt(n)):v;
+}
+
+function startSimulation(){
+
+let mText=document.getElementById("mInput").value.trim();
+let qText=document.getElementById("qInput").value.trim();
+let n=Number(document.getElementById("bitSize").value);
+let error=document.getElementById("error");
+error.textContent="";
+
+if(!/^[01]+$/.test(mText)||!/^[01]+$/.test(qText)){
+error.textContent="ERROR: Only binary digits 0 and 1 are allowed.";
+return;
+}
+
+if(mText.length!==n||qText.length!==n){
+error.textContent="ERROR: Enter exactly "+n+" bits for both operands.";
+return;
+}
+
+let M=BigInt("0b"+mText);
+let Q=BigInt("0b"+qText);
+
+let min=-(1n<<BigInt(n-1));
+let max=(1n<<BigInt(n-1))-1n;
+
+if(signedValue(M,n)<min||signedValue(M,n)>max||
+signedValue(Q,n)<min||signedValue(Q,n)>max){
+error.textContent="ERROR: Operand exceeds signed range.";
+return;
+}
+
+let mask=(1n<<BigInt(n))-1n;
+
+state={n,M,A:0n,Q,Q1:0n};
+
+steps=[{
+iteration:0,
+pair:"-",
+operation:"INITIALIZATION",
+A:0n,Q,Q1:0n
+}];
+
+for(let i=1;i<=n;i++){
+
+let pair=Number((state.Q&1n)*2n+state.Q1);
+let operation="NO OPERATION";
+
+if(pair===1){
+state.A=(state.A+state.M)&mask;
+operation="A = A + M";
+}
+else if(pair===2){
+state.A=(state.A-state.M)&mask;
+operation="A = A - M";
+}
+
+let totalBits=2*n+1;
+let totalMask=(1n<<BigInt(totalBits))-1n;
+
+let combined=(state.A<<BigInt(n+1))|
+(state.Q<<1n)|state.Q1;
+
+let signBit=1n<<BigInt(totalBits-1);
+
+if((combined&signBit)!==0n){
+combined-=1n<<BigInt(totalBits);
+}
+
+combined>>=1n;
+combined&=totalMask;
+
+state.Q1=combined&1n;
+state.Q=(combined>>1n)&mask;
+state.A=(combined>>BigInt(n+1))&mask;
+
+steps.push({
+iteration:i,
+pair:pair.toString(2).padStart(2,"0"),
+operation:operation+" + ARITHMETIC RIGHT SHIFT",
+A:state.A,
+Q:state.Q,
+Q1:state.Q1
+});
+}
+
+currentStep=0;
+
+document.getElementById("simulationArea").classList.remove("hidden");
+document.getElementById("finalResult").classList.add("hidden");
+
+let history=document.getElementById("history");
+history.innerHTML="";
+
+steps.forEach(s=>{
+let row=document.createElement("tr");
+
+[s.iteration,s.pair,s.operation,toBits(s.A,n),toBits(s.Q,n),s.Q1.toString()].forEach(v=>{
+let td=document.createElement("td");
+td.textContent=v;
+row.appendChild(td);
+});
+
+history.appendChild(row);
+});
+
+showStep();
+
+document.getElementById("simulationArea").scrollIntoView({behavior:"smooth"});
+}
+
+function showStep(){
+
+let s=steps[currentStep];
+let n=state.n;
+
+document.getElementById("regA").textContent=toBits(s.A,n);
+document.getElementById("regQ").textContent=toBits(s.Q,n);
+document.getElementById("regQ1").textContent=s.Q1;
+document.getElementById("regM").textContent=toBits(state.M,n);
+
+document.getElementById("currentOperation").textContent=s.operation;
+document.getElementById("iteration").textContent="CYCLE: "+s.iteration+" / "+n;
+document.getElementById("bitPair").textContent="BIT PAIR: "+s.pair;
+
+document.getElementById("operationDetail").textContent=
+s.iteration===0?"Initial register values loaded.":"Operation and arithmetic shift completed.";
+
+let done=currentStep===steps.length-1;
+
+document.getElementById("nextBtn").disabled=done;
+document.getElementById("nextBtn").textContent=
+done?"PROCESS COMPLETED":"NEXT CYCLE →";
+
+if(done)showResult();
+else document.getElementById("finalResult").classList.add("hidden");
+}
+
+function nextStep(){
+if(currentStep<steps.length-1){
+currentStep++;
+showStep();
+}
+}
+
+function showResult(){
+
+let n=state.n;
+let product=(state.A<<BigInt(n))|state.Q;
+
+document.getElementById("binaryResult").textContent=toBits(product,2*n);
+document.getElementById("decimalResult").textContent=
+"DECIMAL OUTPUT: "+signedValue(product,2*n).toString();
+
+document.getElementById("finalResult").classList.remove("hidden");
+}
+
+function resetSimulation(){
+
+state=null;
+steps=[];
+currentStep=0;
+
+document.getElementById("simulationArea").classList.add("hidden");
+document.getElementById("finalResult").classList.add("hidden");
+document.getElementById("history").innerHTML="";
+document.getElementById("error").textContent="";
+document.getElementById("mInput").value="";
+document.getElementById("qInput").value="";
+}
+</script>
+
+</body>
+</html>
